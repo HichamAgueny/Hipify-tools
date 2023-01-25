@@ -15,53 +15,62 @@ In this section, we describe how to use `hipify-perl` and `hipify-clang` tools t
 
 ### Hipify-perl
 
-`hipify-perl` is 
+The `hipify-perl` tool is a script based on perl that translates cuda syntax into hip syntaxt (see .e.g. [here](https://docs.amd.com/en-US/bundle/HIPify-Reference-Guide-v5.1/page/HIPify.html#perl). We list below the basic steps to run `hipify-perl`
 
-- [ ] Step 1: Loading modules
+- **Step 1**: load modules
 
 On LUMI-G, the following modules need to be loaded:
-- `module load CrayEnv`
-- `module load rocm`
-- `module load LUMI/21.12  partition/G`
 
-- [ ] Step 2: Running hipify-perl
+`$module load CrayEnv`
 
-- To generate hipify-perl run the command `hipify-clang --perl`
-- To convert a CUDA code to HIP code: `perl hipify-perl program.cu > program.cu.hip`
-- To compile with `hipcc`: `hipcc --offload-arch=gfx90a -o program_hip program.cu.hip` 
+`$module load rocm`
+
+- **Step 2**: generate `hipify-perl` script
+
+`$hipify-clang --perl`
+
+- **Step 3**: run `hipify-perl`
+
+`$perl hipify-perl program.cu > program.cu.hip`
+
+- **Step 4**: compile with `hipcc`
+
+`$hipcc --offload-arch=gfx90a -o exec_hip program.cu.hip` 
+
+Despite of the simplicity of the use of `hipify-perl`, the tool might not be suitable for large applicatons, as it relies heavily on translating regular expressions (e.g. it replaces *cu* with *hip*). The alternative here is to use `hipify-clang` as described in the next section.
 
 ### Hipify-clang
 
-document guides users to the use of hipify tools.
+As described [here](https://docs.amd.com/en-US/bundle/HIPify-Reference-Guide-v5.1/page/HIPify.html#perl), the `hipify-clang` tool is based on clang for translating CUDA sources into HIP sources. In short, `hipify-clang` requires `LLVM+CLANG` and `CUDA`. Details about building `hipify-clang` can be found [here](https://github.com/ROCm-Developer-Tools/HIPIFY). Note that `hipify-clang` is available on LUMI-G. The issue however might be related to the installation of CUDA-toolkit. To avoid any eventual issues with the installation procedure we opt for CUDA singularity container. In the following, we describe the necessary steps to run `hipify-clang`:
 
-Details about how to build `hipify-clang` can be found [here](https://github.com/ROCm-Developer-Tools/HIPIFY). Note that `hipify-clang` is available on LUMI-G. The issue is related to the installation of CUDA-toolkit.
+- **Step 1**: pull a cuda singularity container e.g.
 
-- [ ] Step 2: test `hipify-clang`
+`$singularity pull docker://nvcr.io/nvidia/cuda:11.4`
 
-Here you develop the necessary steps to run `hipify-clang` and compare the output with the one in the previous step.
+- **Step 2**: load a rocm module before launching the container.
 
-Here are steps to run `hipify-clang` with CUDA container
+`$ml rocm`
 
-- Step0: load a rocm module
-`ml rocm`
+During our testing, we used the rocm version `rocm-5.0.2`. 
 
-- Step1: pull a cuda singularity container [cuda-11.3 lacks a library and cuda-12 lacks compatibility]
-`singularity pull docker://nvcr.io/nvidia/cuda:11.4`
+- **Step 3**: launch the container
 
-- Step2: launch the container
+`$singularity shell -B $PWD,/opt:/opt cuda_11.4.0-devel-ubuntu20.04.sif`
 
-`singularity shell -B $PWD,/opt:/opt cuda_11.4.0-devel-ubuntu20.04.sif`
+where the current directory $PWD in the host is mounted to the one of the container, and the directory `/opt` in the host is mounted to the one inside the container.
 
-- Step3: run `hipify-clang`
+- **Step 4**: set the environment variable `$PATH`
+In order to run `hipify-clang` from inside the container, one can set the environment variable `$PATH` that defines tha path to look for the binary `hipify-clang`
 
-`/opt/rocm-5.0.2/bin/hipify-clang program.cu --cuda-path=/usr/local/cuda-11.4 -I /usr/local/cuda-11.4/include`
+`$export PATH=/opt/rocm-5.0.2/bin:$PATH`
 
-This generates the converted hip code `program.cu.hip`
+- **Step 5**: run `hipify-clang`
 
-- Step4: compile the generated code. BUT first load the required module
-`hipcc --offload-arch=gfx90a -o exec.hip program.cu.hip`
+`$hipify-clang program.cu -o hip_program.cu.hip --cuda-path=/usr/local/cuda-11.4 -I /usr/local/cuda-11.4/include`
 
-- Step5: submit a job to check the result
+Here the cuda path and the path to the includes and defines files should be specified. The CUDA source code and the generated output code are `program.cu` and `hip_program.cu.hip`, respectively.
+
+- **Step 6**: the syntax for compiling the generated hip code is similar to the one described in the previous section (see hipify-per).
 
 Some refs.
 
