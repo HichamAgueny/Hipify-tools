@@ -15,7 +15,7 @@ In this section, we describe how to use `hipify-perl` and `hipify-clang` tools t
 
 ### Hipify-perl
 
-The `hipify-perl` tool is a script based on perl that translates cuda syntax into hip syntaxt (see .e.g. [here](https://docs.amd.com/en-US/bundle/HIPify-Reference-Guide-v5.1/page/HIPify.html#perl). We list below the basic steps to run `hipify-perl`
+The `hipify-perl` tool is a script based on perl that translates CUDA syntax into HIP syntax (see .e.g. [here](https://docs.amd.com/en-US/bundle/HIPify-Reference-Guide-v5.1/page/HIPify.html#perl). As an example, in a CUDA code that makes use of the CUDA functions `cudaMalloc` and `cudaDeviceSynchronize`, the tool will replace `cudaMalloc` by the HIP function `hipMalloc`. Similarly for the CUDA function `cudaDeviceSynchronize`, which will be replaced by `hipDeviceSynchronize`. We list below the basic steps to run `hipify-perl`
 
 - **Step 1**: load modules
 
@@ -41,11 +41,11 @@ Despite of the simplicity of the use of `hipify-perl`, the tool might not be sui
 
 ### Hipify-clang
 
-As described [here](https://docs.amd.com/en-US/bundle/HIPify-Reference-Guide-v5.1/page/HIPify.html#perl), the `hipify-clang` tool is based on clang for translating CUDA sources into HIP sources. In short, `hipify-clang` requires `LLVM+CLANG` and `CUDA`. Details about building `hipify-clang` can be found [here](https://github.com/ROCm-Developer-Tools/HIPIFY). Note that `hipify-clang` is available on LUMI-G. The issue however might be related to the installation of CUDA-toolkit. To avoid any eventual issues with the installation procedure we opt for CUDA singularity container. In the following, we describe the necessary steps to run `hipify-clang`:
+As described [here](https://docs.amd.com/en-US/bundle/HIPify-Reference-Guide-v5.1/page/HIPify.html#perl), the `hipify-clang` tool is based on clang for translating CUDA sources into HIP sources. In short, `hipify-clang` requires `LLVM+CLANG` and `CUDA`. Details about building `hipify-clang` can be found [here](https://github.com/ROCm-Developer-Tools/HIPIFY). Note that `hipify-clang` is available on LUMI-G. The issue however might be related to the installation of CUDA-toolkit. To avoid any eventual issues with the installation procedure we opt for CUDA singularity container. Here we present a step-by-step guide to runing `hipify-clang`:
 
 - **Step 1**: pull a cuda singularity container e.g.
 
-`$singularity pull docker://nvcr.io/nvidia/cuda:11.4`
+`$singularity pull docker://nvcr.io/nvidia/cuda:11.4.0-devel-ubi8`
 
 - **Step 2**: load a rocm module before launching the container.
 
@@ -72,23 +72,24 @@ Here the cuda path and the path to the includes and defines files should be spec
 
 - **Step 6**: the syntax for compiling the generated hip code is similar to the one described in the previous section (see hipify-per).
 
-Some refs.
-
-- https://github.com/ROCm-Developer-Tools/HIPIFY
-
-- https://olcf.ornl.gov/wp-content/uploads/hip_for_cuda_programmers_slides.pdf
-
-- https://github.com/olcf-tutorials/simple_HIP_examples/tree/master/vector_addition
-
-- https://www.admin-magazine.com/HPC/Articles/Porting-CUDA-to-HIP
-
-https://docs.amd.com/en-US/bundle/HIPify-Reference-Guide-v5.1/page/HIPify.html
-
 ## Syclomatic
+
+TODO
 
 ## Clacc
 
+TODO
+
 # Conclusion
 
-We have presented an overview of the usage of available tools to convert CUDA-based applications to HIP, SYCL and OpenMP offloading (for OpenACC C source). In general the translation process for large applications covers about 80-90% of the source code and thus requires manual modification to complet the porting application. It is however worth noting that the accuracy of the translation process requires that applications are written correctly according to the cuda syntax. 
+We have presented an overview of the usage of available tools to convert CUDA-based applications to HIP, SYCL and OpenMP offloading (for OpenACC C source). In general the translation process for large applications covers about 80-90% of the source code and thus requires manual modification to complete the porting process. It is however worth noting that the accuracy of the translation process requires that applications are written correctly according to the CUDA syntax. 
 
+# Relevant links
+
+[Hipify GitHub](https://github.com/ROCm-Developer-Tools/HIPIFY)
+
+[HIPify Reference Guide v5.1](https://docs.amd.com/en-US/bundle/HIPify-Reference-Guide-v5.1/page/HIPify.html)
+
+[HIP example](https://github.com/olcf-tutorials/simple_HIP_examples/tree/master/vector_addition)
+
+[Porting CUDA to HIP](https://www.admin-magazine.com/HPC/Articles/Porting-CUDA-to-HIP)
