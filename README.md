@@ -72,9 +72,37 @@ Here the cuda path and the path to the includes and defines files should be spec
 
 - **Step 6**: the syntax for compiling the generated hip code is similar to the one described in the previous section (see hipify-per).
 
-## Syclomatic
+## SYCLomatic
 
-TODO
+[SYCLomatic](https://github.com/oneapi-src/SYCLomatic) is another conversion tool. However, instead of converting CUDA code to HIP syntax, SYCLomatic converts the code to SYCL/DPC++. To use SYCLomatic, you need to have CUDA libraries in your environment. You can use containers if you can't or don't want to install CUDA libraries. Both docker and singularity should work, but this tutorial will use singularity.
+
+If you want to install SYCLomatic in your environment, you need to download the latest release from [here](https://github.com/oneapi-src/SYCLomatic/releases)
+
+Once downloaded, you need to decompress the tarball into your desired location:
+
+```$tar -xvzf linux_release.tgz -C [desired install location]```
+
+To do the conversion you can now use the executable ```c2s``` which is located in ```[install location]/bin```
+
+To add this to your path, you can either do the following:
+
+```$export PATH=[install location]/bin:$PATH```
+
+Or create a symbolic link in your local ```bin``` folder:
+
+```$ln -s [install location]/bin/dpct /usr/bin/c2s```
+
+To use SYCLomatic through a container, you can use this [container image](./syclomatic_doc/syclomatic.def)
+
+First, build the image:
+
+```$singularity build syclomatic.sif syclomatic.def```
+
+Then execute the conversion tool from within the container:
+
+```$singularity exec syclomatic.sif c2s [file to be converted]```
+
+This will create a folder in your current directory called ```dpct_output```, in which you will find the converted file.
 
 ## Clacc
 
